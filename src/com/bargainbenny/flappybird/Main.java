@@ -1,18 +1,79 @@
 package com.bargainbenny.flappybird;
 
-public class Main {
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.system.MemoryUtil.*;
+
+import java.nio.ByteBuffer;
+
+import org.lwjgl.glfw.GLFWvidmode;
+
+public class Main implements Runnable {
 	
 	private int width = 1280;
 	private int height = 720;
 	
+	private Thread thread;
+	private boolean running = false;
+	
+	private long window;
+	
 	public void start()
 	{
+		running = true;
+		thread = new Thread(this, "Game");
+		thread.start();
+	}
+	
+	private void init()
+	{
+		if(glfwInit() != GL_TRUE)
+		{
+			//TODO Handle it
+			return;
+		}
+		
+		glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+		window = glfwCreateWindow(width, height, "Owens Flappy Bird", NULL, NULL);
+		
+		
+		if(window == NULL)
+		{
+			return;
+			//TODO: Handle
+		}
+		
+		ByteBuffer vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+		glfwSetWindowPos(window, (GLFWvidmode.width(vidmode) - width ) / 2, (GLFWvidmode.height(vidmode) - height ) / 2);
+		glfwMakeContextCurrent(window);
+		glfwShowWindow(window);
 		
 	}
 	
 	public void run()
 	{
+		init();
 		
+		while(running)
+		{
+			update();
+			render();
+			
+			if(glfwWindowShouldClose(window) == GL_TRUE)
+			{
+				running = false;
+			}
+		}
+	}
+	
+	private void update()
+	{
+		glfwPollEvents();
+	}
+	
+	private void render()
+	{
+		glfwSwapBuffers(window);
 	}
 	
 	public static void main(String[] args) {
