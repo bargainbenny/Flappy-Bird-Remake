@@ -7,6 +7,9 @@ import static org.lwjgl.system.MemoryUtil.*;
 import java.nio.ByteBuffer;
 
 import org.lwjgl.glfw.GLFWvidmode;
+import org.lwjgl.opengl.GLContext;
+
+import com.bargainbenny.flappybird.input.Input;
 
 public class Main implements Runnable {
 	
@@ -45,8 +48,18 @@ public class Main implements Runnable {
 		
 		ByteBuffer vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 		glfwSetWindowPos(window, (GLFWvidmode.width(vidmode) - width ) / 2, (GLFWvidmode.height(vidmode) - height ) / 2);
+		
+		glfwSetKeyCallback(window, new Input());
+		
 		glfwMakeContextCurrent(window);
 		glfwShowWindow(window);
+		GLContext.createFromCurrent();
+		
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glEnable(GL_DEPTH_TEST);
+		System.out.println("Open GL: " + glGetString(GL_VERSION));
+		
+		
 		
 	}
 	
@@ -69,10 +82,12 @@ public class Main implements Runnable {
 	private void update()
 	{
 		glfwPollEvents();
+		
 	}
 	
 	private void render()
 	{
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glfwSwapBuffers(window);
 	}
 	
